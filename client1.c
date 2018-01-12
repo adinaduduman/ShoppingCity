@@ -19,12 +19,12 @@
 extern int inet_addr(char *);
 extern int errno;
 int port;
-
+int login;
+char mesaj[100];
 int main ()
 {
     int sd;	
     struct sockaddr_in server;
-    char msg[100];
     /* stabilim portul */
     port = Port;
 
@@ -43,24 +43,53 @@ int main ()
         perror ("[client]Eroare la connect().\n");
         return errno;
         }
-
-    bzero (msg, 100);
-    printf ("[client]Introduceti un nume: ");
-    fflush (stdout);
-    read (0, msg, 100);
-
-    if (write (sd, msg, 100) <= 0)
+    
+    while(1)
     {
-        perror ("[client]Eroare la write() spre server.\n");
-        return errno;
+        bzero (mesaj, 100);
+        fflush (stdout);
+        scanf("%[^\n]%*c", mesaj);
+        if(mesaj[0]=='l' && mesaj[1]=='o' && mesaj[2]=='g' && mesaj[3]=='i' && mesaj[4]=='n' && mesaj[5]==' ' && login == 1)
+        {
+            printf("Sunt deja logat :o OMG!!!\n");
+        }
+        else
+        {
+            if(strcmp(mesaj,"exit")==0)
+            {
+                return 1;
+            }
+            else
+            {
+                if (write (sd, mesaj, strlen(mesaj)) <= 0)
+                {
+                    perror ("[client]Eroare la write() spre server.\n");
+                    return errno;
+                }
+                
+                bzero (mesaj, 100);
+                if (read (sd, mesaj, sizeof(mesaj)) < 0)
+                {
+                    perror ("[client]Eroare la read() de la server.\n");
+                    return errno;
+                }
+                if(strcmp(mesaj,"Logare cu succes")==0)
+                {
+                    login=1;
+                }
+                else
+                {
+                    if(strcmp(mesaj,"Deconectare cu succes") == 0)
+                    {
+                        login=0;
+                    }
+                }
+                printf("%s\n",mesaj);
+            }
+        }
+        
     }
-
-    if (read (sd, msg, 100) < 0)
-    {
-        perror ("[client]Eroare la read() de la server.\n");
-        return errno;
-    }
-    printf ("[client]Mesajul primit este: %s\n", msg);
+    
 
     close (sd);
 }

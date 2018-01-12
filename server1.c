@@ -9,120 +9,93 @@
 #include <stdbool.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <string.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <dirent.h>
+#include <math.h>
+#include <time.h> 
 
 #define PORT 2056
-int sd,client,reuse_socket;
-char comanda[2];
-/*
-void login()
+
+int validare_utilizator(char *utilizator)
 {
-    FILE* users;
-    char user[32],pass[32];
+    char username[100];
+    char ch;
+    int nr=0;
 
-    memset(user, 0, 32);
-    memset(pass,0,32);
-
-    if(read(client, user, 32)<=0)
+    int file=open("utilizatori.txt", O_RDONLY);
+    lseek(file, -1L,1);
+    while(read(file, &ch,1))
     {
-        perror("[server] Eroare la citire\n");
-        close(client);
-        exit(-1);
-    }
-
-    if(read(client, pass, 32)<=0)
-    {
-        perror("[server] Eroare la citire\n");
-        close(client);
-        exit(-1);
-    }
-
-    if(users = fopen("users.txt","r"))
-    {
-        while(!feof(users))
+        if(ch!='\n')
+            username[nr++]=ch;
+        else
         {
-            char line [128];
+            username[nr]='\0';
+            if(strcmp(utilizator,username)==0)
+                return 1;
+            nr=0;
+            username[0]='\0';
+        }
+    }
+    return 0;
+}
+int verificare_comanda(int fd)
+{		
+    char msg[100];
+    char comanda[100];
+    bzero (msg, 100);
+     
+    if(-1 == read (fd, msg, sizeof (msg)))
+    {
+        perror ("Eroare la read() de la client.\n");
+        return 0;
+    }
+    strcpy(comanda,msg);
+    if(comanda[0]=='l' && comanda[1]=='o' && comanda[2]=='g' && comanda[3]=='i' && comanda[4]=='n' && comanda[5]==' ')
+    {
+        strcpy(msg,msg+6);
+        if(0 == validare_utilizator(msg))
+        {
+            strcpy(msg,"Utilizator nevalid");
+        }
+        else
+        {
+            printf("Utilizator logat: %s\n",msg);
+            strcpy(msg,"Logare cu succes");
+        }
 
-            memset(line,0,128);
-
-            if(fgets(line,128,users)<=0)
+    }
+    else
+    {
+        if(strcmp(comanda,"deconectare")==0)
+        {
+            strcpy(msg,"Deconectare cu succes");
+        }
+        else
+        {
+           if(strcmp(comanda,"exit")==0)
             {
-                break;
+                strcpy(msg,"Decuplat de la server");
             }
             else
             {
-                
-            }
+                strcpy(msg,"Comanda nerecunoscuta");
+
+            } 
         }
     }
-
-}
-void log()
-{
-    char user[32],pass[32],citire[150];
-    file *users;
-
-    memset(user, 0, 32);
-    memset(pass,0,32);
-
-    if(read(client, user, 32)<=0)
+        
+    if (write (fd, msg, strlen(msg)) < 0)
     {
-        perror("[server] Eroare la citire\n");
-        close(client);
-        exit(-1);
+        perror ("[server] Eroare la write() catre client.\n");
+        return 0;
     }
-
-    if(read(client, pass, 32)<=0)
-    {
-        perror("[server] Eroare la citire\n");
-        close(client);
-        exit(-1);
-    }
-
-    users= fopen("users.txt","a+");
-
-    sprintf(citire, "%s|%s|%d\n",user,pass,type);
-
-    fputs(citire,users);
-    fclose(users);
-
-
-}
-
-void signal_handler(int sign) 
-{
-	
-    while (waitpid(-1, NULL, WNOHANG) > 0);
-
-}*/
-int sayHello(int fd)
-{
-  char buffer[100];		/* mesajul */
-  int bytes;			/* numarul de octeti cititi/scrisi */
-  char msg[100];		//mesajul primit de la client 
-  char msgrasp[100]=" ";        //mesaj de raspuns pentru client
-
-  bytes = read (fd, msg, sizeof (buffer));
-  if (bytes < 0)
-    {
-      perror ("Eroare la read() de la client.\n");
-      return 0;
-    }
-  printf ("[server]Mesajul a fost receptionat...%s\n", msg);
-      
-  /*pregatim mesajul de raspuns */
-  bzero(msgrasp,100);
-  strcat(msgrasp,"Hello ");
-  strcat(msgrasp,msg);
-      
-  printf("[server]Trimitem mesajul inapoi...%s\n",msgrasp);
-      
-  if (bytes && write (fd, msgrasp, bytes) < 0)
-    {
-      perror ("[server] Eroare la write() catre client.\n");
-      return 0;
-    }
-  
-  return bytes;
+    if(strcmp(comanda,"exit")==0)
+        return -1;
+    
+    return 1;
 }
 int main()
 {
@@ -140,17 +113,14 @@ int main()
     int nfds;	
     int len;	
 
-    /* creare socket */
     if ((sd = socket (AF_INET, SOCK_STREAM, 0)) == -1)
     {
         perror ("[server] Eroare la socket().\n");
         return errno;
     }
 
-    /*setam pentru socket optiunea SO_REUSEADDR */ 
     setsockopt(sd, SOL_SOCKET, SO_REUSEADDR,&optval,sizeof(optval));
 
-    /* pregatim structurile de date */
     bzero (&server, sizeof (server));
 
     server.sin_family = AF_INET;
@@ -169,10 +139,10 @@ int main()
         return errno;
     }
     
-    FD_ZERO (&actfds);		/* initial, multimea este vida */
-    FD_SET (sd, &actfds);		/* includem in multime socketul creat */
+    FD_ZERO (&actfds);		
+    FD_SET (sd, &actfds);	
 
-    tv.tv_sec = 1;		/* se va astepta un timp de 1 sec. */
+    tv.tv_sec = 1;		
     tv.tv_usec = 0;
     
     nfds = sd;
@@ -212,7 +182,7 @@ int main()
                     
             FD_SET (client, &actfds);
 
-            printf("[server] S-a conectat clientul un client");
+            printf("[server] S-a conectat clientul un client\n");
             fflush (stdout);
         }
         for (fd = 0; fd <= nfds; fd++)	/* parcurgem multimea de descriptori */
@@ -220,13 +190,13 @@ int main()
         
             if (fd != sd && FD_ISSET (fd, &readfds))
             {	
-                if (sayHello(fd))
+                if (-1 ==verificare_comanda(fd))
                 {
                     printf ("[server] S-a deconectat clientul cu descriptorul %d.\n",fd);
                     fflush (stdout);
                     close (fd);		/* inchidem conexiunea cu clientul */
                     FD_CLR (fd, &actfds);/* scoatem si din multime */
-                    
+                   return 1;
                 }
             }			/* for */
         }
