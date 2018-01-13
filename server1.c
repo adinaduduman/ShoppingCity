@@ -17,7 +17,105 @@
 #include <time.h> 
 
 #define PORT 2056
+char produse[1000];
+int logare = -1;
+char logare_user[100];
+int verificare_parola(char *logare_user)
+{
+    char cod[100];
+    char ch;
+    int nr=0;
 
+    int file=open("utilizatori.txt", O_RDONLY);
+    lseek(file, -1L,1);
+    while(read(file, &ch,1))
+    {
+        if(ch!='\n')
+            cod[nr++]=ch;
+        else
+        {
+            cod[nr]='\0';
+           if(strcmp(logare_user,cod) == 0)
+           {
+               return 1;
+           }
+           else
+           {
+               cod[0]='\0';
+               nr = 0;
+           }
+            
+        }
+    }
+    return -1;
+}
+int vizualizare_produse(char *categorie)
+{
+    bzero (produse, 1000);
+    produse[0]='\n';
+    if(categorie[0]=='a' && categorie[1]=='l' && categorie[2]=='l')
+    {
+        char ch;
+        int nr;
+        nr = 1;
+        int file=open("Products/AllProducts.txt", O_RDONLY);
+        lseek(file, -1L,1);
+        while(read(file, &ch,1) && ch!=EOF)
+        {
+            produse[nr++]=ch;
+        }
+        produse[strlen(produse)]='\0';
+    }
+    else
+    {
+        if(categorie[0]=='c' && categorie[1]=='l' && categorie[2]=='o' && categorie[3]=='t' && categorie[4]=='h' && categorie[5]=='e')
+        {
+            char ch;
+            int nr;
+            nr = 1;
+            int file=open("Products/Clothes.txt", O_RDONLY);
+            lseek(file, -1L,1);
+            while(read(file, &ch,1) && ch!=EOF)
+            {
+                produse[nr++]=ch;
+            }
+            produse[strlen(produse)]='\0';
+        }
+        else
+        {
+            if(categorie[0]=='e' && categorie[1]=='l' && categorie[2]=='e' && categorie[3]=='c' && categorie[4]=='t' && categorie[5]=='r' && categorie[6]=='o' && categorie[7]=='n' && categorie[8]=='i' && categorie[9]=='c')
+            {
+                char ch;
+                int nr;
+                nr = 1;
+                int file=open("Products/Electronics.txt", O_RDONLY);
+                lseek(file, -1L,1);
+                while(read(file, &ch,1) && ch!=EOF)
+                {
+                    produse[nr++]=ch;
+                }
+                produse[strlen(produse)]='\0';
+            }
+            else
+            {
+                if(categorie[0]=='f' && categorie[1]=='o' && categorie[2]=='o' && categorie[3]=='d')
+                {
+                    char ch;
+                    int nr;
+                    nr = 1;
+                    int file=open("Products/Food.txt", O_RDONLY);
+                    lseek(file, -1L,1);
+                    while(read(file, &ch,1) && ch!=EOF)
+                    {
+                        produse[nr++]=ch;
+                    }
+                    produse[strlen(produse)]='\0';
+                }
+            }
+        }
+    }
+    return 1;
+}
 int validare_utilizator(char *utilizator)
 {
     char username[100];
@@ -28,8 +126,10 @@ int validare_utilizator(char *utilizator)
     lseek(file, -1L,1);
     while(read(file, &ch,1))
     {
-        if(ch!='\n')
+        if(ch!=' ' && ch!='\n')
+        {
             username[nr++]=ch;
+        } 
         else
         {
             username[nr]='\0';
@@ -43,9 +143,9 @@ int validare_utilizator(char *utilizator)
 }
 int verificare_comanda(int fd)
 {		
-    char msg[100];
+    char msg[1000];
     char comanda[100];
-    bzero (msg, 100);
+    bzero (msg, 1000);
      
     if(-1 == read (fd, msg, sizeof (msg)))
     {
@@ -53,39 +153,83 @@ int verificare_comanda(int fd)
         return 0;
     }
     strcpy(comanda,msg);
-    if(comanda[0]=='l' && comanda[1]=='o' && comanda[2]=='g' && comanda[3]=='i' && comanda[4]=='n' && comanda[5]==' ')
+    if(logare != 0)
     {
-        strcpy(msg,msg+6);
-        if(0 == validare_utilizator(msg))
+        printf("Comanda: %s\n",comanda);
+    }
+    
+    if(logare == 0)
+    {
+        strcat(logare_user, " ");
+        strcat(logare_user,msg);
+        if(-1 == verificare_parola(logare_user))
         {
-            strcpy(msg,"Utilizator nevalid");
+            strcpy(msg,"Wrong password");
+            logare = -1;
         }
         else
         {
-            printf("Utilizator logat: %s\n",msg);
-            strcpy(msg,"Logare cu succes");
+            logare =1;
+            strcpy(msg,"Successful authentication");
+            printf("Un utilizator s-a conectat!\n");
         }
-
     }
     else
     {
-        if(strcmp(comanda,"deconectare")==0)
+        if(comanda[0]=='l' && comanda[1]=='o' && comanda[2]=='g' && comanda[3]=='i' && comanda[4]=='n' && comanda[5]==' ')
         {
-            strcpy(msg,"Deconectare cu succes");
-        }
-        else
-        {
-           if(strcmp(comanda,"exit")==0)
+            strcpy(msg,msg+6);
+            if(0 == validare_utilizator(msg))
             {
-                strcpy(msg,"Decuplat de la server");
+                strcpy(msg,"Invalid user");
+                logare_user[0]='\0';
+                logare = -1;
             }
             else
             {
-                strcpy(msg,"Comanda nerecunoscuta");
+                logare = 0;
+                strcpy(logare_user,msg);
+                printf("A user is trying to connect!\n");
+                strcpy(msg,"Password: ");
+            }
 
-            } 
+        }
+        else
+        {
+                if(comanda[0]=='v' && comanda[1]=='i' && comanda[2]=='e' && comanda[3]=='w' && comanda[4]==' ')
+                {
+                    strcpy(msg,msg+5);
+                    if(-1 ==  vizualizare_produse(msg))
+                    {
+                        return 1;
+                    }
+                    strcpy(msg,produse);
+                }
+                else
+                {
+                    if(strcmp(comanda,"disconnect")==0)
+                    {
+                        strcpy(msg,"Disconnect successfull");
+                        printf("Un utilizator s-a deconectat!\n");
+                        logare = -1;
+                    }
+                    else
+                    {
+                    if(strcmp(comanda,"exit")==0)
+                        {
+                            strcpy(msg,"Decuplat de la server");
+                        }
+                        else
+                        {
+                            strcpy(msg,"Comanda nerecunoscuta");
+
+                        } 
+                    }
+                }
+            
         }
     }
+    
         
     if (write (fd, msg, strlen(msg)) < 0)
     {

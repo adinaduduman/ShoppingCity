@@ -20,10 +20,12 @@ extern int inet_addr(char *);
 extern int errno;
 int port;
 int login;
-char mesaj[100];
+char mesaj[1000];
 int main ()
 {
     int sd;	
+    char user[100];
+    login = -1;
     struct sockaddr_in server;
     /* stabilim portul */
     port = Port;
@@ -43,12 +45,25 @@ int main ()
         perror ("[client]Eroare la connect().\n");
         return errno;
         }
-    
     while(1)
     {
-        bzero (mesaj, 100);
+        bzero (mesaj, 1000);
         fflush (stdout);
+        if(login == 1)
+        {
+            printf("%s: ", user);
+        }
+        else
+        {
+            if(login == -1)
+                printf("User: ");
+        }
         scanf("%[^\n]%*c", mesaj);
+        if(mesaj[0]=='l' && mesaj[1]=='o' && mesaj[2]=='g' && mesaj[3]=='i' && mesaj[4]=='n' && mesaj[5]==' ')
+        {
+            strcpy(user, mesaj);
+            strcpy(user,user+6);
+        }
         if(mesaj[0]=='l' && mesaj[1]=='o' && mesaj[2]=='g' && mesaj[3]=='i' && mesaj[4]=='n' && mesaj[5]==' ' && login == 1)
         {
             printf("Sunt deja logat :o OMG!!!\n");
@@ -67,24 +82,57 @@ int main ()
                     return errno;
                 }
                 
-                bzero (mesaj, 100);
+                bzero (mesaj, 1000);
                 if (read (sd, mesaj, sizeof(mesaj)) < 0)
                 {
                     perror ("[client]Eroare la read() de la server.\n");
                     return errno;
                 }
-                if(strcmp(mesaj,"Logare cu succes")==0)
+                
+                if(strcmp(mesaj,"Password: ")==0)
                 {
-                    login=1;
+                    login = 0;
+                    printf("%s",mesaj);
                 }
                 else
                 {
-                    if(strcmp(mesaj,"Deconectare cu succes") == 0)
+                    if(strcmp(mesaj,"Successful authentication")==0)
                     {
-                        login=0;
+                        login=1;
+                    }
+                    else
+                    {
+                        if(strcmp(mesaj,"Wrong password")==0)
+                        {
+                            user[0]='\0';
+                            login = -1;
+                        }
+                        else
+                        {
+                            if(strcmp(mesaj,"Invalid user")==0)
+                            {
+                                user[0]='\0';
+                            }
+                        }
+
+                    }
+                    if(login == 1)
+                    {
+                        printf("%s: ", user);
+                    }
+                    else
+                    {
+                        printf("User: ");
+                    }
+                    printf("%s\n",mesaj);
+                    if(strcmp(mesaj,"Disconnect successfull") == 0)
+                    {
+                            login=-1;
                     }
                 }
-                printf("%s\n",mesaj);
+                
+                
+                
             }
         }
         
