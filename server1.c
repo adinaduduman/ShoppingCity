@@ -17,9 +17,83 @@
 #include <time.h> 
 
 #define PORT 2056
-char produse[1000];
+char produse[10000];
 int logare = -1;
 char logare_user[100];
+int salvare_comanda(char *comanda)
+{
+     
+    char ch;
+    int nr;
+    nr = 1;
+    char cod_unic[5];
+    char linie[500];
+    while(strlen(comanda)>4)
+    {
+        strcpy(cod_unic, comanda);
+        cod_unic[4]='\n';
+        strcpy(comanda, comanda+4);
+        int file=open("Products/AllProducts.txt", O_RDONLY);
+        lseek(file, -1L,1);
+        while(read(file, &ch,1))
+        {
+            if(ch!='\n')
+            {
+                linie[nr++]=ch;
+            }
+            else
+            {
+                linie[strlen(linie)]='\0';
+                char verificare_produse[10000];
+                strcpy(verificare_produse, linie);
+                strcpy(verificare_produse,verificare_produse+strlen(verificare_produse)-4);
+                //strcpy(produse,produse+strlen(produse)-4);
+                if(strcmp(cod_unic, verificare_produse)== 0)
+                {
+                    strcat(produse, linie);
+                }
+                else
+                {
+                    nr=0;
+                    linie[0]='\0';
+                }
+            }
+                
+        }
+    } 
+    return 1;
+        
+}
+int verificare_disponibilitate_produs(char *cod_unic)
+{
+     
+    char ch;
+    int nr;
+    nr = 1;
+    int file=open("Products/AllProducts.txt", O_RDONLY);
+    lseek(file, -1L,1);
+    while(read(file, &ch,1))
+    {
+        if(ch!='\n')
+        {
+            produse[nr++]=ch;
+        }
+        else
+        {
+            produse[strlen(produse)]='\0';
+            strcpy(produse,produse+strlen(produse)-4);
+            if(strcmp(produse, cod_unic)== 0)
+            {
+                return 1;
+            }
+            nr = 0;
+            bzero(produse, 10000);
+        }
+            
+    }
+    return -1;
+        
+}
 int verificare_parola(char *logare_user)
 {
     char cod[100];
@@ -51,7 +125,7 @@ int verificare_parola(char *logare_user)
 }
 int vizualizare_produse(char *categorie)
 {
-    bzero (produse, 1000);
+    bzero (produse, 10000);
     produse[0]='\n';
     if(categorie[0]=='a' && categorie[1]=='l' && categorie[2]=='l')
     {
@@ -68,12 +142,12 @@ int vizualizare_produse(char *categorie)
     }
     else
     {
-        if(categorie[0]=='c' && categorie[1]=='l' && categorie[2]=='o' && categorie[3]=='t' && categorie[4]=='h' && categorie[5]=='e')
+        if(categorie[0]=='c' && categorie[1]=='a' && categorie[2]=='r' && categorie[3]=='t' && categorie[4]=='i')
         {
             char ch;
             int nr;
             nr = 1;
-            int file=open("Products/Clothes.txt", O_RDONLY);
+            int file=open("Products/Carti.txt", O_RDONLY);
             lseek(file, -1L,1);
             while(read(file, &ch,1) && ch!=EOF)
             {
@@ -83,12 +157,12 @@ int vizualizare_produse(char *categorie)
         }
         else
         {
-            if(categorie[0]=='e' && categorie[1]=='l' && categorie[2]=='e' && categorie[3]=='c' && categorie[4]=='t' && categorie[5]=='r' && categorie[6]=='o' && categorie[7]=='n' && categorie[8]=='i' && categorie[9]=='c')
+            if(categorie[0]=='e' && categorie[1]=='l' && categorie[2]=='e' && categorie[3]=='c' && categorie[4]=='t' && categorie[5]=='r' && categorie[6]=='o' && categorie[7]=='c' && categorie[8]=='a' && categorie[9]=='s' && categorie[10]=='n' && categorie[11]=='i' &&  categorie[12]=='c')
             {
                 char ch;
                 int nr;
                 nr = 1;
-                int file=open("Products/Electronics.txt", O_RDONLY);
+                int file=open("Products/Electrocasnice.txt", O_RDONLY);
                 lseek(file, -1L,1);
                 while(read(file, &ch,1) && ch!=EOF)
                 {
@@ -98,18 +172,56 @@ int vizualizare_produse(char *categorie)
             }
             else
             {
-                if(categorie[0]=='f' && categorie[1]=='o' && categorie[2]=='o' && categorie[3]=='d')
+                if(categorie[0]=='f' && categorie[1]=='a' && categorie[2]=='s' && categorie[3]=='h'  && categorie[4]=='i' && categorie[5]=='o'  && categorie[6]=='n')
                 {
                     char ch;
                     int nr;
                     nr = 1;
-                    int file=open("Products/Food.txt", O_RDONLY);
+                    int file=open("Products/Fashion.txt", O_RDONLY);
                     lseek(file, -1L,1);
                     while(read(file, &ch,1) && ch!=EOF)
                     {
                         produse[nr++]=ch;
                     }
                     produse[strlen(produse)]='\0';
+                }
+                else
+                {
+                    if(categorie[0]=='p' && categorie[1]=='c')
+                    {
+                        char ch;
+                        int nr;
+                        nr = 1;
+                        int file=open("Products/PC.txt", O_RDONLY);
+                        lseek(file, -1L,1);
+                        while(read(file, &ch,1) && ch!=EOF)
+                        {
+                            produse[nr++]=ch;
+                        }
+                        produse[strlen(produse)]='\0';
+                    }
+                    else
+                    {
+                        if(categorie[0]=='t' && categorie[1]=='e' && categorie[2]=='l' && categorie[3]=='e'  && categorie[4]=='f' && categorie[5]=='o'  && categorie[6]=='a')
+                        {
+                            char ch;
+                            int nr;
+                            nr = 1;
+                            int file=open("Products/Telefoane.txt", O_RDONLY);
+                            lseek(file, -1L,1);
+                            while(read(file, &ch,1) && ch!=EOF)
+                            {
+                                produse[nr++]=ch;
+                            }
+                            produse[strlen(produse)]='\0';
+                        }
+                        else
+                        {
+                                  strcpy(produse,"Categorie indisponibila");
+
+                          
+                        }
+                    }
                 }
             }
         }
@@ -143,9 +255,9 @@ int validare_utilizator(char *utilizator)
 }
 int verificare_comanda(int fd)
 {		
-    char msg[1000];
-    char comanda[100];
-    bzero (msg, 1000);
+    char msg[10000];
+    char comanda[10000];
+    bzero (msg, 10000);
      
     if(-1 == read (fd, msg, sizeof (msg)))
     {
@@ -206,25 +318,60 @@ int verificare_comanda(int fd)
                     strcpy(msg,produse);
                 }
                 else
-                {
-                    if(strcmp(comanda,"disconnect")==0)
+                {   
+                    if(comanda[0]=='a' && comanda[1]=='d' && comanda[2]=='d' && comanda[3]==' ')
                     {
-                        strcpy(msg,"Disconnect successfull");
-                        printf("Un utilizator s-a deconectat!\n");
-                        logare = -1;
-                    }
-                    else
-                    {
-                    if(strcmp(comanda,"exit")==0)
+                        strcpy(msg,msg+4);
+                        if(-1 == verificare_disponibilitate_produs(msg))
                         {
-                            strcpy(msg,"Decuplat de la server");
+                            strcpy(msg, "Product unavailable");
                         }
                         else
                         {
-                            strcpy(msg,"Comanda nerecunoscuta");
-
-                        } 
+                            strcpy(msg,"Successfully added product");
+                        }
                     }
+                    else
+                    {
+                        if(comanda[0]=='s' && comanda[1]=='e' && comanda[2]=='n' && comanda[3]=='t' && comanda[4]==' ')
+                        {
+                            strcpy(msg,msg+8);
+                            if(-1 == salvare_comanda(msg))
+                            {
+                                strcpy(msg, "Eroase la salvare comanda");
+                            }
+                            else
+                            {
+                                strcpy(msg,"Produsele comandate cu succes.\n");
+                                strcat(msg,produse);
+                            }
+
+                        }
+                        else
+                        {
+                            if(strcmp(comanda,"disconnect")==0)
+                            {
+                                strcpy(msg,"Disconnect successfull");
+                                printf("Un utilizator s-a deconectat!\n");
+                                logare = -1;
+                            }
+                            else
+                            {
+                                if(strcmp(comanda,"exit")==0)
+                                {
+                                    strcpy(msg,"Decuplat de la server");
+                                }
+                                    else
+                                    {
+                                        strcpy(msg,"Comanda nerecunoscuta");
+                                    }
+                                    
+    
+                            }
+                        }
+                    }
+                    
+                    
                 }
             
         }

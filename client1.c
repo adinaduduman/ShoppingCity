@@ -20,11 +20,12 @@ extern int inet_addr(char *);
 extern int errno;
 int port;
 int login;
-char mesaj[1000];
+char cos_de_cumparaturi[10000];
+char mesaj[10000];
 int main ()
 {
     int sd;	
-    char user[100];
+    char user[10000];
     login = -1;
     struct sockaddr_in server;
     /* stabilim portul */
@@ -47,7 +48,7 @@ int main ()
         }
     while(1)
     {
-        bzero (mesaj, 1000);
+        bzero (mesaj, 10000);
         fflush (stdout);
         if(login == 1)
         {
@@ -58,84 +59,112 @@ int main ()
             if(login == -1)
                 printf("User: ");
         }
+        
         scanf("%[^\n]%*c", mesaj);
         if(mesaj[0]=='l' && mesaj[1]=='o' && mesaj[2]=='g' && mesaj[3]=='i' && mesaj[4]=='n' && mesaj[5]==' ')
         {
             strcpy(user, mesaj);
             strcpy(user,user+6);
         }
-        if(mesaj[0]=='l' && mesaj[1]=='o' && mesaj[2]=='g' && mesaj[3]=='i' && mesaj[4]=='n' && mesaj[5]==' ' && login == 1)
+        if(strcmp(mesaj,"view cart") == 0 )
         {
-            printf("Sunt deja logat :o OMG!!!\n");
+            printf("Cart: %s\n", cos_de_cumparaturi);
         }
         else
         {
-            if(strcmp(mesaj,"exit")==0)
+            if(strcmp(mesaj,"clear cart") == 0 )
             {
-                return 1;
+                cos_de_cumparaturi[0]='\0';
             }
             else
             {
-                if (write (sd, mesaj, strlen(mesaj)) <= 0)
-                {
-                    perror ("[client]Eroare la write() spre server.\n");
-                    return errno;
-                }
-                
-                bzero (mesaj, 1000);
-                if (read (sd, mesaj, sizeof(mesaj)) < 0)
-                {
-                    perror ("[client]Eroare la read() de la server.\n");
-                    return errno;
-                }
-                
-                if(strcmp(mesaj,"Password: ")==0)
-                {
-                    login = 0;
-                    printf("%s",mesaj);
-                }
-                else
-                {
-                    if(strcmp(mesaj,"Successful authentication")==0)
+                    if(strcmp(mesaj,"sent cart") == 0)
                     {
-                        login=1;
+                        strcat(mesaj,cos_de_cumparaturi);
+                    }
+                    if(mesaj[0]=='l' && mesaj[1]=='o' && mesaj[2]=='g' && mesaj[3]=='i' && mesaj[4]=='n' && mesaj[5]==' ' && login == 1)
+                    {
+                        printf("Sunt deja logat :o OMG!!!\n");
                     }
                     else
                     {
-                        if(strcmp(mesaj,"Wrong password")==0)
+                        if(mesaj[0]=='a' && mesaj[1]=='d' && mesaj[2]=='d')
                         {
-                            user[0]='\0';
-                            login = -1;
+                            strcat(cos_de_cumparaturi,mesaj+4);
+                            strcat(cos_de_cumparaturi," ");
+                        }
+                        if(strcmp(mesaj,"exit")==0)
+                        {
+                            return 1;
                         }
                         else
                         {
-                            if(strcmp(mesaj,"Invalid user")==0)
+                            if (write (sd, mesaj, strlen(mesaj)) <= 0)
                             {
-                                user[0]='\0';
+                                perror ("[client]Eroare la write() spre server.\n");
+                                return errno;
                             }
-                        }
+                            
+                            bzero (mesaj, 10000);
+                            if (read (sd, mesaj, sizeof(mesaj)) < 0)
+                            {
+                                perror ("[client]Eroare la read() de la server.\n");
+                                return errno;
+                            }
+                            
+                            if(strcmp(mesaj,"Password: ")==0)
+                            {
+                                login = 0;
+                                printf("%s",mesaj);
+                            }
+                            else
+                            {
+                                if(strcmp(mesaj,"Successful authentication")==0)
+                                {
+                                    login=1;
+                                }
+                                else
+                                {
+                                    if(strcmp(mesaj,"Wrong password")==0)
+                                    {
+                                        user[0]='\0';
+                                        login = -1;
+                                    }
+                                    else
+                                    {
+                                        if(strcmp(mesaj,"Invalid user")==0)
+                                        {
+                                            user[0]='\0';
+                                        }
+                                        else
+                                        {
+                                            if(strcmp(mesaj,"Product unavailable")==0)
+                                            {
+                                                cos_de_cumparaturi[strlen(cos_de_cumparaturi)-5]='\0';
+                                            }
+                                        }
+                                    }
 
+                                }
+                                if(login == 1)
+                                {
+                                    printf("%s: ", user);
+                                }
+                                else
+                                {
+                                    printf("User: ");
+                                }
+                                printf("%s\n",mesaj);
+                                if(strcmp(mesaj,"Disconnect successfull") == 0)
+                                {
+                                        login=-1;
+                                }
+                            }
+
+                        }
                     }
-                    if(login == 1)
-                    {
-                        printf("%s: ", user);
-                    }
-                    else
-                    {
-                        printf("User: ");
-                    }
-                    printf("%s\n",mesaj);
-                    if(strcmp(mesaj,"Disconnect successfull") == 0)
-                    {
-                            login=-1;
-                    }
-                }
-                
-                
-                
             }
         }
-        
     }
     
 

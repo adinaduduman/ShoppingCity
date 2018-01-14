@@ -1,6 +1,50 @@
-Haine Tricou 30 lei
-Haine Pantaloni 40 lei
-Electrocasnice Frigider 1550 lei
-Electrocasnice Cuptor cu microunde 300 lei
-Alimente Paine 2 lei
-Alimente Ananas 6 lei
+Carti Adela_Ibraileanu 25lei Cod: 1205
+Carti Romanul_adolescentului_miop_Eliade 18lei Cod: 3575
+Carti Crima_si_pedeapsa_Dostoievski 16lei Cod: 6629
+Carti Micul_Print 30lei Cod: 4246
+Carti Morometii_1_Preda 25lei Cod: 7177
+Carti Morometii_2_Preda 25lei Cod: 5594
+Carti Rascoala_Rebreanu 30lei Cod: 7026
+Carti Mizerabilii_Hugo_1 15lei Cod: 7170
+Carti Mizerabilii_Hugo_2 15lei Cod: 3570
+Carti Mizerabilii_Hugo_3 15lei Cod: 7391
+Electrocasnice Aspirator 150lei Cod: 4940
+Electrocasnice Hota 100lei Cod: 7719
+Electrocasnice Espressor 300lei Cod: 6659
+Electrocasnice Frigider_LG 1100lei Cod: 7795
+Electrocasnice Cuptor_cu_microunde 250lei Cod: 3803
+Electrocasnice Masina_spalat 1200lei Cod: 6370
+Electrocasnice Fier_de_calcat 130lei Cod: 8387
+Electrocasnice Cuptor_electric 800lei Cod: 3546
+Electrocasnice Aragaz 400lei Cod: 4068
+Electrocasnice Plita_electrica 300lei Cod: 8949
+Fashion Jacheta_Barbati 150lei Cod: 5423
+Fashion Rochie_Ocazie 230lei Cod: 4968
+Fashion Caciula 40lei Cod: 9765
+Fashion Manusi 20lei Cod: 4163
+Fashion Fular 80lei Cod: 2697
+Fashion Jacheta_Femei 150lei Cod: 6903
+Fashion Geanta_Femei 130lei Cod: 6445
+Fashion Fusta 70lei Cod: 3638
+Fashion Bluza_Barbati 40lei Cod: 3992
+Fashion Sosete 12lei Cod: 2374
+PC Laptop_Asus 2400lei Cod: 8674
+PC Laptop_Lenovo 2300lei Cod: 3443
+PC Laptop_Acer 2000lei Cod: 8422
+PC Cooler_CPU 1000lei Cod: 1235
+PC Mouse 40lei Cod: 7826
+PC Tastatura 80lei Cod: 9194
+PC Placa_video_Asus 100lei Cod: 6545
+PC Monitor_LG 500lei Cod: 5004
+PC Stick_usb 50lei Cod: 9942
+PC Boxe 90lei Cod: 9174
+Telefoane Samsung_Galaxy_Note8 4200lei Cod: 3024
+Telefoane Huawei_P9_lite 900lei Cod: 9792
+Telefoane Huawei_P10_lite 1100lei Cod: 4597
+Telefoane Samsung_Galaxy_J5 1100lei Cod: 8400
+Telefoane iPhone_X 5400lei Cod: 5408
+Telefoane Samsung_Galaxy_S8 3100lei Cod: 7241
+Telefoane iPhone_7 2700lei Cod: 3696
+Telefoane Samsung_Galaxy_S7 1800lei Cod: 2048
+Telefoane Samsung_Galaxy_S6 1000lei Cod: 6423
+Telefoane iPhone_6 1800lei Cod: 4967
