@@ -20,50 +20,6 @@
 char produse[10000];
 int logare = -1;
 char logare_user[100];
-int salvare_comanda(char *comanda)
-{
-     
-    char ch;
-    int nr;
-    nr = 1;
-    char cod_unic[5];
-    char linie[500];
-    while(strlen(comanda)>4)
-    {
-        strcpy(cod_unic, comanda);
-        cod_unic[4]='\n';
-        strcpy(comanda, comanda+4);
-        int file=open("Products/AllProducts.txt", O_RDONLY);
-        lseek(file, -1L,1);
-        while(read(file, &ch,1))
-        {
-            if(ch!='\n')
-            {
-                linie[nr++]=ch;
-            }
-            else
-            {
-                linie[strlen(linie)]='\0';
-                char verificare_produse[10000];
-                strcpy(verificare_produse, linie);
-                strcpy(verificare_produse,verificare_produse+strlen(verificare_produse)-4);
-                //strcpy(produse,produse+strlen(produse)-4);
-                if(strcmp(cod_unic, verificare_produse)== 0)
-                {
-                    strcat(produse, linie);
-                }
-                else
-                {
-                    nr=0;
-                    linie[0]='\0';
-                }
-            }
-                
-        }
-    } 
-    return 1;
-        
-}
 int verificare_disponibilitate_produs(char *cod_unic)
 {
      
@@ -335,17 +291,7 @@ int verificare_comanda(int fd)
                     {
                         if(comanda[0]=='s' && comanda[1]=='e' && comanda[2]=='n' && comanda[3]=='t' && comanda[4]==' ')
                         {
-                            strcpy(msg,msg+8);
-                            if(-1 == salvare_comanda(msg))
-                            {
-                                strcpy(msg, "Eroase la salvare comanda");
-                            }
-                            else
-                            {
-                                strcpy(msg,"Produsele comandate cu succes.\n");
-                                strcat(msg,produse);
-                            }
-
+                                strcpy(msg,"Produsele comandate cu succes: ");
                         }
                         else
                         {

@@ -46,9 +46,11 @@ int main ()
         perror ("[client]Eroare la connect().\n");
         return errno;
         }
+        bzero (cos_de_cumparaturi, 10000);
     while(1)
     {
         bzero (mesaj, 10000);
+        
         fflush (stdout);
         if(login == 1)
         {
@@ -68,13 +70,14 @@ int main ()
         }
         if(strcmp(mesaj,"view cart") == 0 )
         {
-            printf("Cart: %s\n", cos_de_cumparaturi);
+            printf("%s: Cart: %s\n", user,cos_de_cumparaturi);
         }
         else
         {
             if(strcmp(mesaj,"clear cart") == 0 )
             {
                 cos_de_cumparaturi[0]='\0';
+                bzero (cos_de_cumparaturi, 10000);
             }
             else
             {
@@ -154,11 +157,22 @@ int main ()
                                 {
                                     printf("User: ");
                                 }
-                                printf("%s\n",mesaj);
+                                if(strcmp("Produsele comandate cu succes: ", mesaj)==0)
+                                {
+                                    printf("%s",mesaj);
+                                    printf("%s\n", cos_de_cumparaturi);
+                                    bzero (cos_de_cumparaturi, 10000);
+                                }
+                                else
+                                {
+                                    printf("%s\n",mesaj);
+                                }
+                                
                                 if(strcmp(mesaj,"Disconnect successfull") == 0)
                                 {
                                         login=-1;
                                 }
+                                
                             }
 
                         }
